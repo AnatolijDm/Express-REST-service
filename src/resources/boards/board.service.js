@@ -1,13 +1,15 @@
-const boardsRepo = require('./board.memory.repository');
+const boardRepo = require('./board.memoryDB.repository');
 
-const getAll = () => boardsRepo.getAll();
+const getAll = async () => await boardRepo.getAll();
+const get = async id => await boardRepo.get(id);
+const change = async (id, board) => await boardRepo.change(id, board);
+const del = async id => await boardRepo.del(id);
+const create = async board => await boardRepo.create(board);
 
-const get = id => boardsRepo.get(id);
-
-const create = board => boardsRepo.create(board);
-
-const change = (id, data) => boardsRepo.change(id, data);
-
-const del = id => boardsRepo.del(id);
-
-module.exports = { getAll, get, create, change, del };
+module.exports = {
+  getAll,
+  get,
+  change,
+  del,
+  create
+};

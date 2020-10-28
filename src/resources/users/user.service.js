@@ -1,13 +1,15 @@
-const usersRepo = require('./user.memory.repository');
+const usersRepo = require('./user.memoryDB.repository');
 
-const getAll = () => usersRepo.getAll();
+const getAll = async () => await usersRepo.getAll();
+const get = async id => await usersRepo.get(id);
+const change = async (id, user) => await usersRepo.change(id, user);
+const del = async id => await usersRepo.del(id);
+const create = async user => await usersRepo.create(user);
 
-const get = id => usersRepo.get(id);
-
-const create = user => usersRepo.create(user);
-
-const change = (id, data) => usersRepo.change(id, data);
-
-const del = id => usersRepo.del(id);
-
-module.exports = { getAll, get, create, change, del };
+module.exports = {
+  getAll,
+  get,
+  change,
+  del,
+  create
+};
