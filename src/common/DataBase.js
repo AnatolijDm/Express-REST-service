@@ -1,5 +1,6 @@
 const User = require('../resources/users/user.model');
 const Board = require('../resources/boards/board.model');
+const { hashPassword } = require('./hashHelper');
 
 const Db = {
   users: [],
@@ -11,9 +12,15 @@ Db.users.push(new User(), new User(), new User());
 
 const getAllUsers = async () => Db.users.slice(0);
 const getUser = async id => Db.users.filter(e => e.id === id)[0];
-const createUser = async user => {
-  Db.users.push(user);
-  return user;
+const createUser = async data => {
+  const { password } = Db.users;
+  const hashedPassword = await hashPassword(password);
+  const newUser = {
+    ...data,
+    password: hashedPassword
+  };
+  Db.users.push(newUser);
+  return newUser;
 };
 const changeUser = async (id, data) => {
   const user = await getUser(id);
