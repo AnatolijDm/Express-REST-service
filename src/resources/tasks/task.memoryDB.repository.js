@@ -20,18 +20,18 @@ const create = async task => {
   return userCr;*/
 };
 
-const change = async (id, data) => {
+const change = async (boardId, id, data) => {
   // throw new Error();
-  return Task.update({ _id: id }, data);
+  return Task.update({ boardId }, { _id: id }, data);
 };
 
-const del = async id => {
+const del = async (boardId, id) => {
   // throw new Error();
   /* users.filter(e => e.id !== id);
   /*Db.tasks.forEach(e => {
     e.userId = null;
   });*/
-  return Task.deleteOne({ _id: id });
+  return Task.delete({ boardId }, { _id: id });
 };
 
 module.exports = { getAll, get, create, change, del };

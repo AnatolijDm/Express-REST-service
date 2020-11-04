@@ -32,6 +32,15 @@ const deleteUser = async id => {
   return Db.users.slice(0);
 };
 
+const getByProps = props =>
+  Db.users.find(user => {
+    const matches = Object.entries(props).map(item => {
+      const [prop, value] = item;
+      return user[prop] === value;
+    });
+    return matches.every(item => item === true);
+  });
+
 Db.boards.push(new Board(), new Board(), new Board());
 
 const getAllBoards = async () => Db.boards.slice(0);
@@ -115,6 +124,7 @@ module.exports = {
   createUser,
   changeUser,
   deleteUser,
+  getByProps,
   getAllBoards,
   getBoard,
   createBoard,

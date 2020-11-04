@@ -5,6 +5,8 @@ const YAML = require('yamljs');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
+const loginRouter = require('./common/loginRouter');
+const checkToken = require('./common/checkToken');
 
 const { finished } = require('stream');
 const fs = require('fs');
@@ -88,8 +90,11 @@ process.on('unhandledRejection', err => {
   });
 });
 
-app.use('/users', userRouter);
+app.use('/', checkToken);
+
+app.use('/users', checkToken, userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
+app.use('/login', loginRouter);
 
 module.exports = app;

@@ -1,7 +1,7 @@
 const uuid = require('uuid');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
-const tasksSchema = new mongoose.Schema(
+/* const tasksSchema = new mongoose.Schema(
   {
     title: String,
     order: Number,
@@ -22,25 +22,26 @@ tasksSchema.statics.toResponse = task => {
   return { id, title, order, description, userId, boardId, columnId };
 };
 
-const Task = mongoose.model('Task', tasksSchema);
+const Task = mongoose.model('Task', tasksSchema);*/
 
-/* class User {
+class Task {
   constructor({
     id = uuid(),
-    name = 'USER',
-    login = 'user',
-    password = 'P@55w0rd'
+    title = 'Title',
+    order = 1,
+    description = 'Description',
+    userId = '123',
+    boardId = '1234',
+    columnId = '12345'
   } = {}) {
     this.id = id;
-    this.name = name;
-    this.login = login;
-    this.password = password;
+    this.title = title;
+    this.order = order;
+    this.description = description;
+    this.userId = userId;
+    this.boardId = boardId;
+    this.columnId = columnId;
   }
-
-  static toResponse(user) {
-    const { id, name, login } = user;
-    return { id, name, login };
-  }
-}*/
+}
 
 module.exports = Task;

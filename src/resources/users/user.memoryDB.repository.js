@@ -1,11 +1,13 @@
 const User = require('../users/user.model');
 
-const getAll = async () => User.find({});
+const getAll = async () => {
+  (await User.find({})).exec();
+};
 // throw new Error();
 
 const get = async id => {
   // throw new Error();
-  const user = User.findOne({ _id: id });
+  const user = (await User.findOne({ _id: id })).exec();
 
   if (!user) {
     throw new Error(`The user with id: ${id} was not found!`);
@@ -15,7 +17,7 @@ const get = async id => {
 };
 
 const create = async user => {
-  return User.create(user);
+  return (await User.create(user)).exec();
   /* const userCr =  User.create(user);
   Db.users.push(userCr);
   return userCr;*/
