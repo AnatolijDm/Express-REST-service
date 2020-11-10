@@ -1,4 +1,3 @@
-const User = require('../resources/users/user.model');
 const Board = require('../resources/boards/board.model');
 const { hashPassword } = require('./hashHelper');
 
@@ -7,8 +6,6 @@ const Db = {
   boards: [],
   tasks: []
 };
-
-Db.users.push(new User(), new User(), new User());
 
 const getAllUsers = async () => Db.users.slice(0);
 const getUser = async id => Db.users.filter(e => e.id === id)[0];
@@ -39,14 +36,7 @@ const deleteUser = async id => {
   return Db.users.slice(0);
 };
 
-const getByProps = props =>
-  Db.users.find(user => {
-    const matches = Object.entries(props).map(item => {
-      const [prop, value] = item;
-      return user[prop] === value;
-    });
-    return matches.every(item => item === true);
-  });
+const getByProps = async props => await Db.users.find(props);
 
 Db.boards.push(new Board(), new Board(), new Board());
 

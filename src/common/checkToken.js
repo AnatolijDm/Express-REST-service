@@ -1,24 +1,29 @@
-const jtw = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = require('./config');
+const { UNAUTHORIZED, getStatusText } = require('http-status-codes');
+
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'Unauthorized error';
+    this.status = UNAUTHORIZED;
+    this.text = getStatusText(this.status);
+  }
+}
 
 module.exports = (req, res, next) => {
   const authHeader = req.header('Authorization');
-
   if (authHeader !== undefined) {
     const tokenString = req.header('Authorization');
+
     const [type, token] = tokenString.split(' ');
 
     if (type !== 'Bearer') {
-      res.status(401).send('Unauthorized user');
+      throw new UnauthorizedError('Unauthorized user!');
     } else {
-      try {
-        const resp = jtw.verify(token, JWT_SECRET_KEY);
-        console.log(resp);
-      } catch {
-        res.status(401).send('Unauthorized user');
-      }
+      jwt.verify(token, JWT_SECRET_KEY);
       return next();
     }
   }
-  res.status(401).send('Unauthorized user');
+  throw new UnauthorizedError('Unauthorized user!');
 };

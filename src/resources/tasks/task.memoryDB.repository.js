@@ -1,37 +1,91 @@
-const Task = require('../tasks/task.model');
+const { Task } = require('./task.model');
+const {
+  NotFoundError,
+  NotValidError
+} = require('../users/user.memoryDB.repository');
+const validate = require('uuid-validate');
 
-const getAll = async id => Task.findOne({ boardId: id });
-
-const get = async (boardId, id) => {
-  // throw new Error();
-  const task = Task.find({ boardId }, { _id: id });
-
-  if (!task) {
-    throw new Error(`The task with id: ${id} was not found!`);
+const getAll = async id => {
+  if (!validate(id)) {
+    throw new NotValidError(`Board ID ${id} is not correct`);
   }
+  const tasks = await Task.find({ boardId: id });
+  if (!tasks) {
+    throw new NotFoundError(`Couldn't find tasks on board with id: ${id}`);
+  }
+  return tasks;
+};
 
+const save = async (boardId, tasks) => {
+  if (!validate(boardId)) {
+    throw new NotValidError(`Board ID ${boardId} is not correct`);
+  }
+  tasks.boardId = boardId;
+  await Task.validate(tasks);
+  const task = await Task.create(tasks);
   return task;
 };
 
-const create = async task => {
-  return Task.create(task);
-  /* const userCr =  User.create(user);
-  Db.users.push(userCr);
-  return userCr;*/
+const get = async (id, boardId) => {
+  if (!validate(boardId)) {
+    throw new NotValidError(`Board ID ${boardId} is not correct`);
+  }
+  if (!validate(id)) {
+    throw new NotValidError(`Task ID ${id} is not correct`);
+  }
+
+  const task = await Task.findOne({ _id: id, boardId });
+  if (!task) {
+    throw new NotFoundError(`Couldn't find a task with id: ${id}`);
+  }
+  return task;
 };
 
-const change = async (boardId, id, data) => {
-  // throw new Error();
-  return Task.update({ boardId }, { _id: id }, data);
+const update = async (body, id, boardId) => {
+  if (!validate(boardId)) {
+    throw new NotValidError(`Board ID ${boardId} is not correct`);
+  }
+  if (!validate(id)) {
+    throw new NotValidError(`Task ID ${id} is not correct`);
+  }
+  await Task.validate(body);
+  const task = await Task.findOne({ boardId, _id: id });
+  if (!task) {
+    throw new NotFoundError(`Couldn't find a task with id: ${id}`);
+  }
+  await Task.findOneAndUpdate({ _id: id, boardId }, { ...body, boardId });
+  return get(id, boardId);
 };
 
-const del = async (boardId, id) => {
-  // throw new Error();
-  /* users.filter(e => e.id !== id);
-  /*Db.tasks.forEach(e => {
-    e.userId = null;
-  });*/
-  return Task.delete({ boardId }, { _id: id });
+const remove = async (id, boardId) => {
+  if (!validate(boardId)) {
+    throw new NotValidError(`Board ID ${boardId} is not correct`);
+  }
+  if (!validate(id)) {
+    throw new NotValidError(`Task ID ${id} is not correct`);
+  }
+
+  const task = await Task.find({ boardId, _id: id });
+  if (!task[0]) {
+    throw new NotFoundError(`Couldn't find a task with id: ${id}`);
+  }
+  await Task.deleteOne({ _id: id, boardId });
+  return task[0];
 };
 
-module.exports = { getAll, get, create, change, del };
+const deleteUserTasks = async userId => {
+  await Task.updateMany({ userId }, { userId: null });
+};
+const deleteBoardTasks = async boardId => {
+  await Task.deleteMany({ boardId });
+};
+
+module.exports = {
+  getAll,
+  get,
+  remove,
+  save,
+  update,
+  deleteUserTasks,
+  deleteBoardTasks
+};

@@ -1,27 +1,34 @@
-const uuid = require('uuid');
-/* const mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const usersSchema = new mongoose.Schema(
+const User = new Schema(
   {
-    name: String,
-    login: String,
-    password: String,
-    _id: {
+    name: {
       type: String,
-      default: uuid
+      minlength: [3, 'Too short name'],
+      maxlength: 30,
+      required: [true, 'Type user name']
+    },
+    login: {
+      type: String,
+      minlength: [3, 'Too short login'],
+      maxlength: 30,
+      required: [true, 'Type user login']
+    },
+    password: {
+      type: String,
+      minlength: 5
     }
   },
-  { versionKey: false }
+  { collection: 'users', versionKey: false }
 );
 
-usersSchema.statics.toResponse = user => {
+const toResponse = user => {
   const { id, name, login } = user;
   return { id, name, login };
 };
 
-const User = mongoose.model('User', usersSchema);*/
-
-class User {
+/* class User {
   constructor({
     id = uuid(),
     name = 'USER',
@@ -38,6 +45,9 @@ class User {
     const { id, name, login } = user;
     return { id, name, login };
   }
-}
+}*/
 
-module.exports = User;
+module.exports = {
+  User: mongoose.model('users', User),
+  toResponse
+};

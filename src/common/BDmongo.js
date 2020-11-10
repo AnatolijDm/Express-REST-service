@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const mongoDBaccess = require('./config');
-const User = require('../resources/users/user.model');
-
-const users = [new User()];
+const userRepo = require('../resources/users/user.memoryDB.repository');
+const { DEFAULT_USER_ADMIN } = require('./const');
 
 const connectToDBmongo = cb => {
   mongoose.connect(mongoDBaccess.MONGO_CONNECTION_STRING, {
@@ -15,7 +14,7 @@ const connectToDBmongo = cb => {
   db.once('open', () => {
     console.log('you are connected!');
     db.dropDatabase();
-    users.forEach(user => user.save());
+    userRepo.saveAdminUser(DEFAULT_USER_ADMIN);
     cb();
   });
 };

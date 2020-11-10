@@ -7,7 +7,6 @@ const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const loginRouter = require('./common/loginRouter');
 const checkToken = require('./common/checkToken');
-
 const { finished } = require('stream');
 const fs = require('fs');
 const { INTERNAL_SERVER_ERROR, getStatusText } = require('http-status-codes');
@@ -66,6 +65,16 @@ app.use((err, req, res, next) => {
   return;
 });
 
+app.use('/login', loginRouter);
+
+app.use(checkToken);
+
+app.use('/users', checkToken, userRouter);
+
+app.use('/boards', boardRouter);
+
+boardRouter.use('/:boardId/tasks', taskRouter);
+
 process.on('uncaughtException', err => {
   const start = Date.now();
   const date = new Date(start);
@@ -89,12 +98,5 @@ process.on('unhandledRejection', err => {
     }
   });
 });
-
-app.use('/', checkToken);
-
-app.use('/users', checkToken, userRouter);
-app.use('/boards', boardRouter);
-boardRouter.use('/:boardId/tasks', taskRouter);
-app.use('/login', loginRouter);
 
 module.exports = app;

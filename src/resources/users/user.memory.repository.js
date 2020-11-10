@@ -1,4 +1,5 @@
 const Db = require('../../common/DataBase');
+const User = require('./user.model');
 
 const getAll = async () => Db.getAllUsers();
 
@@ -24,4 +25,10 @@ const del = async id => {
   return Db.deleteUser(id);
 };
 
-module.exports = { getAll, get, create, change, del };
+const saveAdminUser = async user => {
+  const { name, login } = user;
+  const users = await Db.getByProps({ name, login });
+  if (users.length < 1) await User.toResponse(user);
+};
+
+module.exports = { saveAdminUser, getAll, get, create, change, del };
